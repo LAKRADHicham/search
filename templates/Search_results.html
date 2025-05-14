@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Résultats de recherche</title>
+</head>
+<body>
+    <h1>Résultats de recherche</h1>
+    {% if results %}
+        <ul>
+        {% for doc in results %}
+            <li>
+                <strong>{{ doc.name }}</strong><br>
+                <a href="{{ url_for('view_document', filename=doc.path) }}">Afficher</a> |
+                <a href="{{ url_for('download', filename=doc.path) }}">Télécharger</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun document trouvé.</p>
+    {% endif %}
+    <br>
+    <a href="{{ url_for('home') }}">⬅ Retour à la page principale</a>
+</body>
+</html>

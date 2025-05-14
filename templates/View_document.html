@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Affichage du document</title>
+</head>
+<body>
+    <h1>Affichage du document</h1>
+    
+    <embed src="{{ url_for('static', filename='documents/' + file_path) }}" width="100%" height="600px" type="application/pdf">
+
+    <p>
+        <a href="{{ url_for('download_document', path=file_path) }}">📥 Télécharger</a> |
+        <a href="{{ url_for('index') }}">🔙 Retour à l'accueil</a>
+    </p>
+</body>
+</html>

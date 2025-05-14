@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Technique</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bleu: #448cc3;
+            --vert: #a9c90e;
+            --mixte: #6bad65;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--bleu);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 15px 15px;
+            position: relative;
+        }
+        
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logout-btn {
+            background-color: var(--vert);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .search-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--bleu);
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        
+        .search-btn {
+            background-color: var(--vert);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .search-btn:hover {
+            background-color: var(--mixte);
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .results-container {
+            margin-top: 30px;
+        }
+        
+        .document-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .doc-info {
+            flex: 1;
+        }
+        
+        .doc-info h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .doc-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .doc-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .view-btn {
+            background-color: var(--bleu);
+            color: white;
+        }
+        
+        .download-btn {
+            background-color: var(--vert);
+            color: white;
+        }
+        
+        .print-btn {
+            background-color: var(--mixte);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Documentation Technique</h1>
+        {% if current_user.is_authenticated %}
+        <div class="user-info">
+            Connecté en tant que <strong>{{ current_user.id }}</strong>
+            <a href="{{ url_for('logout') }}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </a>
+        </div>
+        {% endif %}
+    </header>
+
+    <div class="container">
+        <div class="search-box">
+            <form method="POST" class="search-form">
+                <input type="text" name="search" class="search-input" 
+                       placeholder="Rechercher par nom de document..." 
+                       value="{{ search_term }}" required>
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Rechercher
+                </button>
+                <a href="/" class="action-btn" style="background-color: var(--mixte)">
+                    <i class="fas fa-sync-alt"></i> Réinitialiser
+                </a>
+            </form>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if results %}
+        <div class="results-container">
+            <h2>Résultats ({{ results|length }} trouvés)</h2>
+            {% for doc in results %}
+            <div class="document-card">
+                <div class="doc-info">
+                    <h3>{{ doc.name }}</h3>
+                    <div class="doc-meta">
+                        <span class="doc-category">{{ doc.category }}</span>
+                    </div>
+                </div>
+                <div class="doc-actions">
+                    <a href="{{ url_for('view_file', file_path=doc.path) }}" 
+                       target="_blank" 
+                       class="action-btn view-btn">
+                       <i class="fas fa-eye"></i> Afficher
+                    </a>
+                    <a href="{{ doc.download_url }}" download
+                       class="action-btn download-btn">
+                       <i class="fas fa-download"></i> Télécharger
+                    </a>
+                    <button onclick="window.open('{{ doc.download_url }}').print()" 
+                            class="action-btn print-btn">
+                            <i class="fas fa-print"></i> Imprimer
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
