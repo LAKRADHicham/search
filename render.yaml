@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: search-app
+    env: python
+    buildCommand: ""
+    startCommand: "gunicorn app:app"
+    envVars:
+      - key: SECRET_KEY
+        value: e89d2d4c1f78baeaa92702d8312adf3dd57d5a6f86c6d275e95e2350481878f6
